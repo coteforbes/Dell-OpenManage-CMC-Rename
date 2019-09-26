@@ -1,0 +1,27 @@
+---
+- hosts: all_cmc
+  gather_facts: no
+  tasks:
+    - name: Get chassis name
+      shell: /opt/dell/srvadmin/sbin/racadm -r {{ inventory_hostname }} -u root -p {{ idrac_password }} --nocertwarn getchassisname
+      delegate_to:  {{ remote_racadm_server }}
+      register: cmc_name 
+
+# Set the variable to the right name since the output needs to be parsed
+    - set_fact: cmc_name_var="{{ cmc_name.stdout_lines.4 }}"
+
+# Check the variable
+    - debug: var=cmc_name_var
+
+    - name: Set CMC DNS name
+      shell: /opt/dell/srvadmin/sbin/racadm -r {{ inventory_hostname }} -u root -p {{ idrac_password }} --nocertwarn config -g cfgLanNetworking -o cfgDNSRacName {{ cmc_name_var }}
+      delegate_to:  {{ remote_racadm_server }}
+
+
+    - name: Set CMC Lauch Method to DNS
+      shell: /opt/dell/srvadmin/sbin/racadm -r {{ inventory_hostname }} -u root -p {{ idrac_password }} --nocertwarn config -g cfgRacTuning -o cfgRacTuneIdracDNSLaunchEnable 1
+      delegate_to:  {{ remote_racadm_server }}
+
+
+
+
