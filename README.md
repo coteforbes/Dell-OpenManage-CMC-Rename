@@ -7,3 +7,8 @@ Since this will only get run once, I just hardcoded the Idrac Password.
 
 
 This uses a remote linux host with racadm remote tools installed and delegates the commands there, just remove the delegate and modify shell command for local racadm use.
+
+
+```
+ansible-playbook -i inventories/all_cmc Rename-CMC.yml --ask-become-pass
+```
